@@ -276,7 +276,10 @@ class Dynamics:
             else:
                 normalized_trajectory = self.trajectory.copy()
             for i in range(number_of_atoms):
-                normalized_trajectory[:, i, :] = atomic_displacement(trajectory[:, i, :], position[i], cell)
+                print (trajectory.dtype)
+                print (position[i].dtype)
+                test = np.array(trajectory[:, i, :], order='C', dtype=float)
+                normalized_trajectory[:, i, :] = atomic_displacement(test, position[i], cell)
             self._relative_trajectory = normalized_trajectory
         return self._relative_trajectory
 

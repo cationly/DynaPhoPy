@@ -17,10 +17,10 @@ static double _Complex  **pymatrix_to_c_array_complex   (PyArrayObject *array);
 static double   **matrix_inverse ( double ** a ,int n);
 static double     Determinant(double  **a,int n);
 static double   **CoFactor(double  **a,int n);
-static PyObject  *atomic_displacement(PyObject* self, PyObject *arg, PyObject *keywords);
+static PyObject  *atomic_displacement(PyObject* self, PyObject *args, PyObject *keywords);
 
 
-static PyObject *atomic_displacement(PyObject *self, PyObject *arg, PyObject *keywords) {
+static PyObject *atomic_displacement(PyObject *self, PyObject *args, PyObject *keywords) {
 
 
 //  Interface with python
@@ -28,13 +28,19 @@ static PyObject *atomic_displacement(PyObject *self, PyObject *arg, PyObject *ke
 
 
     static char *kwlist[] = {"trajectory", "positions", "cell", NULL};
-    if (!PyArg_ParseTupleAndKeywords(arg, keywords, "OOO", kwlist,  &Trajectory_obj, &Positions_obj, &Cell_obj))  return NULL;
+//    if (!PyArg_ParseTupleAndKeywords(args, keywords, "OOO", kwlist,  &Trajectory_obj, &Positions_obj, &Cell_obj)) return NULL;
+
+    if (!PyArg_ParseTuple(args, "OOO",  &Trajectory_obj, &Positions_obj, &Cell_obj)) return NULL;
+
+    printf("test1\n");
+    PyObject *Positions_array = PyArray_FROM_OTF(Positions_obj, NPY_DOUBLE, NPY_IN_ARRAY);
+    printf("test2\n");
 
     PyObject *Trajectory_array = PyArray_FROM_OTF(Trajectory_obj, NPY_CDOUBLE, NPY_IN_ARRAY);
-    PyObject *Positions_array = PyArray_FROM_OTF(Positions_obj, NPY_DOUBLE, NPY_IN_ARRAY);
     PyObject *Cell_array = PyArray_FROM_OTF(Cell_obj, NPY_DOUBLE, NPY_IN_ARRAY);
 
-    if (Cell_array == NULL || Trajectory_array == NULL) {
+
+    if (Cell_array == NULL || Trajectory_array == NULL || Positions_array == NULL ) {
          Py_XDECREF(Cell_array);
          Py_XDECREF(Trajectory_array);
          Py_XDECREF(Positions_array);
@@ -286,9 +292,14 @@ static int TwotoOne(int Row, int Column, int NumColumns) {
 static char extension_docs[] =
     "atomic_displacement(cell, trajectory, positions )\n";
 
+static char module_docstring[] =
+    "This a module that contains only one function.";
+
+
 static PyMethodDef extension_funcs[] = {
-    {"atomic_displacement", (PyCFunction)atomic_displacement, METH_VARARGS|METH_KEYWORDS, extension_docs},
-    {NULL}
+  //  {"atomic_displacement", (PyCFunction)atomic_displacement, METH_VARARGS|METH_KEYWORDS, extension_docs},
+    {"atomic_displacement", (PyCFunction)atomic_displacement, METH_VARARGS, extension_docs},
+    {NULL, NULL, 0, NULL}
 };
 
 
@@ -297,9 +308,13 @@ static PyMethodDef extension_funcs[] = {
 static struct PyModuleDef moduledef = {
   PyModuleDef_HEAD_INIT,
   "displacements",
-  NULL,
+  module_docstring,
   -1,
-  extension_funcs
+  extension_funcs,
+  NULL,
+  NULL,
+  NULL,
+  NULL
 };
 
 //  PyObject *module = PyModule_Create(&moduledef);

@@ -38,6 +38,12 @@ displacements = Extension('dynaphopy.displacements',
                 include_dirs = include_dirs_numpy,
                 sources=['c/displacements.c'])
 
+chi2 = Extension('dynaphopy.chi2',
+                extra_compile_args=['-std=c99'],
+                include_dirs = include_dirs_numpy,
+                sources=['c/_chi2.c'])
+
+
 setup(name='dynaphopy',
       version=get_version_number(),
       description='dynaphopy module',
@@ -52,7 +58,7 @@ setup(name='dynaphopy',
                 'dynaphopy.interface',
                 'dynaphopy.interface.iofile'],
       scripts=['scripts/dynaphopy'],
-      ext_modules=[correlation, mem, displacements])
+      ext_modules=[correlation, mem, displacements, chi2])
 
 
 exit()
