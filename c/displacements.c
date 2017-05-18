@@ -291,6 +291,25 @@ static PyMethodDef extension_funcs[] = {
     {NULL}
 };
 
+
+// Python 3.x
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef moduledef = {
+  PyModuleDef_HEAD_INIT,
+  "displacements",
+  NULL,
+  -1,
+  extension_funcs
+};
+
+//  PyObject *module = PyModule_Create(&moduledef);
+PyMODINIT_FUNC PyInit_displacements(void)
+{
+    return PyModule_Create(&moduledef);
+}
+
+// Python 2.x
+#else
 void initdisplacements(void)
 {
 //  Importing numpy array types
@@ -299,3 +318,15 @@ void initdisplacements(void)
     Py_InitModule3("displacements", extension_funcs,
                    "Calculate the trajectory relative to atoms position");
 };
+
+//  PyObject *module = Py_InitModule("displacements", extension_funcs);
+#endif
+
+//#if PY_MAJOR_VERSION >= 3
+//  return module;
+//#endif
+
+
+
+
+//static struct PyModuleDef atomic_displacement =

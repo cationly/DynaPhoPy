@@ -170,6 +170,25 @@ static PyMethodDef extension_funcs[] =
 };
 
 
+
+// Python 3.x
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef moduledef = {
+  PyModuleDef_HEAD_INIT,
+  "mem",
+  NULL,
+  -1,
+  extension_funcs
+};
+
+//  PyObject *module = PyModule_Create(&moduledef);
+PyMODINIT_FUNC PyInit_mem(void)
+{
+    return PyModule_Create(&moduledef);
+}
+
+// Python 2.x
+#else
 void initmem(void)
 {
 //  Importing numpy array types
@@ -177,3 +196,6 @@ void initmem(void)
     Py_InitModule3("mem", extension_funcs,
                    "Fast Correlation Functions ");
 };
+
+//  PyObject *module = Py_InitModule("displacements", extension_funcs);
+#endif

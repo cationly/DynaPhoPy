@@ -270,16 +270,13 @@ class Dynamics:
             position = self.structure.get_positions(supercell=supercell)
 
             trajectory = self.trajectory
-
             if self._memmap:
                 normalized_trajectory = np.memmap(self._temp_directory+'r_trajectory.{0}'.format(os.getpid()),
                                                   dtype='complex', mode='w+', shape=trajectory.shape)
             else:
                 normalized_trajectory = self.trajectory.copy()
-
             for i in range(number_of_atoms):
                 normalized_trajectory[:, i, :] = atomic_displacement(trajectory[:, i, :], position[i], cell)
-
             self._relative_trajectory = normalized_trajectory
         return self._relative_trajectory
 
@@ -433,7 +430,8 @@ class Dynamics:
                 for j in range(self.structure.get_number_of_dimensions()):
                     self._velocity[:, i, j] = np.gradient(self.get_relative_trajectory()[:, i, j],
                                                           self.get_time_step_average())
-
+        print (self._velocity)
+        exit()
         return self._velocity
 
     @velocity.setter

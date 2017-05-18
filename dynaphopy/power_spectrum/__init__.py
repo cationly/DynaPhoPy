@@ -2,8 +2,6 @@ import numpy as np
 import sys
 
 import matplotlib.pyplot as plt
-import correlation
-import mem
 
 unit_conversion = 0.00010585723  # u * A^2 * THz -> eV*ps
 
@@ -54,6 +52,8 @@ def _division_of_data(resolution, number_of_data, time_step):
 #   Fourier transform - direct method       #
 #############################################
 def get_fourier_direct_power_spectra(vq, trajectory, parameters):
+    import correlation
+
     test_frequency_range = np.array(parameters.frequency_range)
 
     psd_vector = []
@@ -78,6 +78,7 @@ def get_fourier_direct_power_spectra(vq, trajectory, parameters):
 #   Maximum entropy method method   #
 #####################################
 def get_mem_power_spectra(vq, trajectory, parameters):
+    import mem
     test_frequency_range = np.array(parameters.frequency_range)
 
     # Check number of coefficients
@@ -106,6 +107,7 @@ def get_mem_power_spectra(vq, trajectory, parameters):
 #    Coefficient analysis (MEM)     #
 #####################################
 def mem_coefficient_scan_analysis(vq, trajectory, parameters):
+    import mem
     from dynaphopy.analysis.fitting import fitting_functions
 
     mem_full_dict = {}
