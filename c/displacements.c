@@ -20,6 +20,66 @@ static double   **CoFactor(double  **a,int n);
 static PyObject  *atomic_displacement(PyObject* self, PyObject *args, PyObject *keywords);
 
 
+
+//  Python Interface
+
+static char function_docstring[] =
+    "atomic_displacement(cell, trajectory, positions )";
+
+static char module_docstring[] =
+    "This a module that contains only one function.";
+
+static PyMethodDef extension_funcs[] = {
+    {"atomic_displacement", atomic_displacement, METH_VARARGS|METH_KEYWORDS, function_docstring},
+    {NULL, NULL, 0, NULL}
+};
+
+
+// Python 3.x
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef moduledef = {
+  PyModuleDef_HEAD_INIT,
+  "displacements",
+  module_docstring,
+  -1,
+  extension_funcs,
+  NULL,
+  NULL,
+  NULL,
+  NULL
+};
+
+//  PyObject *module = PyModule_Create(&moduledef);
+PyMODINIT_FUNC PyInit_displacements(void)
+{
+    return PyModule_Create(&moduledef);
+}
+
+// Python 2.x
+#else
+void initdisplacements(void)
+{
+//  Importing numpy array types
+    import_array();
+
+    Py_InitModule3("displacements", extension_funcs,
+                   "Calculate the trajectory relative to atoms position");
+};
+
+//  PyObject *module = Py_InitModule("displacements", extension_funcs);
+#endif
+
+//#if PY_MAJOR_VERSION >= 3
+//  return module;
+//#endif
+
+
+
+
+//static struct PyModuleDef atomic_displacement =
+
+
+
 static PyObject *atomic_displacement(PyObject *self, PyObject *args, PyObject *keywords) {
 
 
@@ -28,16 +88,15 @@ static PyObject *atomic_displacement(PyObject *self, PyObject *args, PyObject *k
 
 
     static char *kwlist[] = {"trajectory", "positions", "cell", NULL};
-//    if (!PyArg_ParseTupleAndKeywords(args, keywords, "OOO", kwlist,  &Trajectory_obj, &Positions_obj, &Cell_obj)) return NULL;
-
-    if (!PyArg_ParseTuple(args, "OOO",  &Trajectory_obj, &Positions_obj, &Cell_obj)) return NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, keywords, "OOO", kwlist,  &Trajectory_obj, &Positions_obj, &Cell_obj)) return NULL;
 
     printf("test1\n");
-    PyObject *Positions_array = PyArray_FROM_OTF(Positions_obj, NPY_DOUBLE, NPY_IN_ARRAY);
-    printf("test2\n");
 
     PyObject *Trajectory_array = PyArray_FROM_OTF(Trajectory_obj, NPY_CDOUBLE, NPY_IN_ARRAY);
+    PyObject *Positions_array = PyArray_FROM_OTF(Positions_obj, NPY_DOUBLE, NPY_IN_ARRAY);
     PyObject *Cell_array = PyArray_FROM_OTF(Cell_obj, NPY_DOUBLE, NPY_IN_ARRAY);
+
+    printf("test2\n");
 
 
     if (Cell_array == NULL || Trajectory_array == NULL || Positions_array == NULL ) {
@@ -47,8 +106,9 @@ static PyObject *atomic_displacement(PyObject *self, PyObject *args, PyObject *k
          return NULL;
     }
 
+    printf("test3\n");
 
-//  double _Complex *Cell           = (double _Complex*)PyArray_DATA(Cell_array);
+//    double _Complex *Cell           = (double _Complex*)PyArray_DATA(Cell_array);
     double _Complex *Trajectory     = (double _Complex*)PyArray_DATA(Trajectory_array);
     double *Positions               = (double*)PyArray_DATA(Positions_array);
 
@@ -286,62 +346,3 @@ static int TwotoOne(int Row, int Column, int NumColumns) {
 	return Row*NumColumns + Column;
 };
 
-
-//  Python Interface
-
-static char extension_docs[] =
-    "atomic_displacement(cell, trajectory, positions )\n";
-
-static char module_docstring[] =
-    "This a module that contains only one function.";
-
-
-static PyMethodDef extension_funcs[] = {
-  //  {"atomic_displacement", (PyCFunction)atomic_displacement, METH_VARARGS|METH_KEYWORDS, extension_docs},
-    {"atomic_displacement", (PyCFunction)atomic_displacement, METH_VARARGS, extension_docs},
-    {NULL, NULL, 0, NULL}
-};
-
-
-// Python 3.x
-#if PY_MAJOR_VERSION >= 3
-static struct PyModuleDef moduledef = {
-  PyModuleDef_HEAD_INIT,
-  "displacements",
-  module_docstring,
-  -1,
-  extension_funcs,
-  NULL,
-  NULL,
-  NULL,
-  NULL
-};
-
-//  PyObject *module = PyModule_Create(&moduledef);
-PyMODINIT_FUNC PyInit_displacements(void)
-{
-    return PyModule_Create(&moduledef);
-}
-
-// Python 2.x
-#else
-void initdisplacements(void)
-{
-//  Importing numpy array types
-    import_array();
-
-    Py_InitModule3("displacements", extension_funcs,
-                   "Calculate the trajectory relative to atoms position");
-};
-
-//  PyObject *module = Py_InitModule("displacements", extension_funcs);
-#endif
-
-//#if PY_MAJOR_VERSION >= 3
-//  return module;
-//#endif
-
-
-
-
-//static struct PyModuleDef atomic_displacement =

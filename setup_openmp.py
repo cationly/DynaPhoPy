@@ -39,9 +39,10 @@ displacements = Extension('dynaphopy.displacements',
                 sources=['c/displacements.c'])
 
 chi2 = Extension('dynaphopy.chi2',
-                extra_compile_args=['-std=c99'],
+                extra_compile_args=['-std=c99', '-fopenmp'],
+                extra_link_args=['-lgomp'],
                 include_dirs = include_dirs_numpy,
-                sources=['c/_chi2.c'])
+                sources=['c/chi2.c'])
 
 
 setup(name='dynaphopy',
